@@ -1,26 +1,108 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --primary: #00f0ff;
+  --primary-dark: #00c8e0;
+  --secondary: #b300ff;
+  --secondary-light: #d580ff;
+  --accent: #ff00ea;
+  --bg: #0a0a12;
+  --surface: #12122a;
+  --text: #f0f0ff;
+  --text-muted: #b0b0d0;
+  --glass-bg: rgba(18, 18, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --neon-glow: 0 0 15px rgba(0, 240, 255, 0.5);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* Animated background stars */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at 20% 50%, rgba(0,240,255,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(179,0,255,0.15) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, rgba(255,0,234,0.1) 0%, transparent 50%);
+  z-index: -1;
+  animation: bgPulse 8s infinite alternate ease-in-out;
+}
+
+@keyframes bgPulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Floating particles */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  animation: float linear infinite;
+  opacity: 0.6;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* Glass utility */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 1.5rem;
+  transition: all 0.3s ease;
+}
+.glass:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 20px rgba(0,240,255,0.3);
+}
+
+/* Neon button */
+.neon-btn {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border: none;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  box-shadow: 0 0 20px rgba(0,240,255,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.neon-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(179,0,255,0.6);
+}
+
+/* Animated gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

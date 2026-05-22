@@ -8,12 +8,140 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid
-  email     String   @unique
-  name      String?
-  avatarUrl String?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
+  id               String                     @id @default(uuid()) @db.Uuid
+  email            String                     @unique
+  name             String?
+  avatarUrl        String?
+  createdAt        DateTime                   @default(now()) @map("created_at")
+  updatedAt        DateTime                   @updatedAt @map("updated_at")
+  books            Book[]                     @relation("seller")
+  favorites        Favorite[]
+  reviewsReceived  Review[]                   @relation("reviewedUser")
+  reviewsWritten   Review[]                   @relation("reviewer")
+  exchangeRequestsAsRequester ExchangeRequest[] @relation("requester")
+  conversationsAsParticipant ConversationParticipant[]
+  messagesSent     Message[]
+  notifications    Notification[]
   @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String   @unique
+  slug      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  books     Book[]
+  @@map("categories")
+}
+
+model Book {
+  id                String             @id @default(uuid()) @db.Uuid
+  title             String
+  author            String
+  isbn              String?
+  categoryId        String?            @map("category_id") @db.Uuid
+  condition         String
+  price             Decimal            @db.Decimal(10,2)
+  exchangeAvailable Boolean            @default(false) @map("exchange_available")
+  description       String?
+  location          String?
+  sellerId          String             @map("seller_id") @db.Uuid
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  category          Category?          @relation(fields: [categoryId], references: [id])
+  seller            User               @relation("seller", fields: [sellerId], references: [id])
+  images            BookImage[]
+  exchangeRequestsAsRequested ExchangeRequest[] @relation("requestedBook")
+  exchangeRequestsAsOffered   ExchangeRequest[] @relation("offeredBook")
+  favorites         Favorite[]
+  reviews           Review[]
+  conversations     Conversation[]
+  @@map("books")
+}
+
+model BookImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  bookId    String   @map("book_id") @db.Uuid
+  url       String
+  createdAt DateTime @default(now()) @map("created_at")
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@map("book_images")
+}
+
+model ExchangeRequest {
+  id              String   @id @default(uuid()) @db.Uuid
+  requesterId     String   @map("requester_id") @db.Uuid
+  requestedBookId String   @map("requested_book_id") @db.Uuid
+  offeredBookId   String   @map("offered_book_id") @db.Uuid
+  status          String   @default("pending")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  requester       User     @relation("requester", fields: [requesterId], references: [id])
+  requestedBook   Book     @relation("requestedBook", fields: [requestedBookId], references: [id])
+  offeredBook     Book     @relation("offeredBook", fields: [offeredBookId], references: [id])
+  @@map("exchange_requests")
+}
+
+model Conversation {
+  id           String                   @id @default(uuid()) @db.Uuid
+  bookId       String?                  @map("book_id") @db.Uuid
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  book         Book?                    @relation(fields: [bookId], references: [id])
+  participants ConversationParticipant[]
+  messages     Message[]
+  @@map("conversations")
+}
+
+model ConversationParticipant {
+  conversationId String       @map("conversation_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id])
+  @@id([conversationId, userId])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id             String       @id @default(uuid()) @db.Uuid
+  conversationId String       @map("conversation_id") @db.Uuid
+  senderId       String       @map("sender_id") @db.Uuid
+  content        String
+  createdAt      DateTime     @default(now()) @map("created_at")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id])
+  @@map("messages")
+}
+
+model Favorite {
+  userId    String   @map("user_id") @db.Uuid
+  bookId    String   @map("book_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  @@id([userId, bookId])
+  @@map("favorites")
+}
+
+model Review {
+  id             String   @id @default(uuid()) @db.Uuid
+  reviewerId     String   @map("reviewer_id") @db.Uuid
+  reviewedUserId String   @map("reviewed_user_id") @db.Uuid
+  bookId         String?  @map("book_id") @db.Uuid
+  rating         Int
+  comment        String?
+  createdAt      DateTime @default(now()) @map("created_at")
+  reviewer       User     @relation("reviewer", fields: [reviewerId], references: [id])
+  reviewedUser   User     @relation("reviewedUser", fields: [reviewedUserId], references: [id])
+  book           Book?    @relation(fields: [bookId], references: [id])
+  @@map("reviews")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("notifications")
 }
