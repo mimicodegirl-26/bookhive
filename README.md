@@ -84,11 +84,11 @@ npm install
 Create a `.env.local` file in the root and add:
 
 ```env
-# Supabase (from your Supabase project)
+# Supabase 
 NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-publishable-key
 
-# Cloudinary (from your Cloudinary dashboard)
+# Cloudinary 
 NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
 NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=bookhive_unsigned
 CLOUDINARY_API_KEY=your_api_key
