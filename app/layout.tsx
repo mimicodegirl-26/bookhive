@@ -4,6 +4,7 @@ import "./globals.css"
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import StarsBackground from "@/components/ui/StarsBackground"
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
 const poppins = Poppins({
@@ -26,6 +27,16 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
       <body className="font-sans min-h-screen flex flex-col bg-bg text-white">
         <StarsBackground />
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            style: {
+              background: '#12122a',
+              color: '#fff',
+              border: '1px solid rgba(255,255,255,0.1)',
+            },
+          }}
+        />
         <Navbar />
         <main className="flex-1 relative z-10">{children}</main>
         <Footer />
